@@ -3,7 +3,7 @@
 
 This homework assignment is designed to give you practice working with arrays,
 linked lists, and nested loops.  It will also give you practice for the similar
-but harder run-length encoding computations in Project 1.  This is an
+but harder "run-length encoding" computations in Project 1.  This is an
 individual assignment; you may not share code with other students.
 
 Copy the Homework 3 directory by doing the following, starting from your home

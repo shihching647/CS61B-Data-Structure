@@ -146,9 +146,9 @@ public class SList {
     // Fill in your solution here.  (Ours is seven lines long.)
 	  SListNode node = head;
 	  while(node != null) {
-		  SListNode tmp = node.next; //把原先後面的先暫存起來
-		  node.next = new SListNode(node.item);//建一個新的SListNode
-		  node.next.next = tmp;	//再把原先後面的接上去
+		  SListNode temp = node.next; //把原先後面的先暫存起來
+          SListNode newNode = new SListNode(node.item,temp); //建一個新的SListNode, item為現在node的值, next為temp
+		  node.next = newNode;
 		  node = node.next.next; //往後移兩個
 	  }
   }
