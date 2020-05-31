@@ -51,8 +51,8 @@ public class SList {
   public void insertFront(Object obj) {
 //	    head = new SListNode(obj, head);
 //	    size++;
-	  	//當長度爲0時候要把head跟tail指到SListNode上
-		if(size == 0) {
+        //當為空list時, 要把head跟tail指到SListNode上
+		if(head == null) {
 			head = new SListNode(obj);
 			tail = head;
 		}else {
@@ -67,6 +67,7 @@ public class SList {
    **/
 
   public void insertEnd(Object obj) {
+      //原本時間複雜度O(n)
 //    if (head == null) {
 //      head = new SListNode(obj);
 //    } else {
@@ -77,9 +78,9 @@ public class SList {
 //      node.next = new SListNode(obj);
 //    }
 //    size++;
-	  
-	//當長度爲0時候要把head跟tail指到SListNode上
-	if(size == 0) {
+      //修改成時間複雜度O(1)
+	//當為空list時, 要把head跟tail指到SListNode上
+	if(head == null) {
 		tail = new SListNode(obj);
 		head = tail;
 	}else {
