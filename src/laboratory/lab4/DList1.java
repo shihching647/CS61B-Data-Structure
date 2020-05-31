@@ -67,7 +67,21 @@ public class DList1 {
    *  insertFront() inserts an item at the front of a DList1.
    */
   public void insertFront(int i) {
-    // Your solution here.
+      if(size == 0) {
+          head = new DListNode1(i);
+          tail = head;
+      } else if(size == 1) {
+          head = new DListNode1(i);
+          head.next = tail;
+          tail.prev = head;
+      } else {
+          DListNode1 oldHead = head;
+          DListNode1 newHead = new DListNode1(i);
+          newHead.next = oldHead;
+          oldHead.prev = newHead;
+          head = newHead;
+      }
+      size++;
   }
 
   /**
@@ -75,7 +89,24 @@ public class DList1 {
    *  list is empty, do nothing.
    */
   public void removeFront() {
-    // Your solution here.
+      if(size == 0) {
+          head = tail = null;
+          return;
+      } else if(size <= 1){
+          head = tail = null;
+      } else if(size == 2){
+          DListNode1 oldHead = head;
+          oldHead.next = null;
+          head = tail;
+          head.prev = null;
+      } else {
+          DListNode1 oldHead = head;
+          DListNode1 newHead = head.next;
+          oldHead.next = null;
+          newHead.prev = null;
+          head = newHead;
+      }
+      size--;
   }
 
   /**
@@ -159,11 +190,62 @@ public class DList1 {
       System.out.println("size is wrong.");
     }
 
+      l.insertFront(7);
+      System.out.println("\nInserting 7 at front.\nList with7, 8 and 9 is " + l);
+      if (l.head == null) {
+          System.out.println("head is null.");
+      } else {
+          if (l.head.item != 7) {
+              System.out.println("head.item is wrong.");
+          }
+          if (l.head.prev != null) {
+              System.out.println("head.prev is wrong.");
+          }
+          if (l.head.next.item != 8) {
+              System.out.println("head.next is wrong.");
+          }
+      }
+      if (l.tail == null) {
+          System.out.println("tail is null.");
+      } else {
+          if (l.tail.item != 9) {
+              System.out.println("tail.item is wrong.");
+          }
+          if (l.tail.next != null) {
+              System.out.println("tail.next is wrong.");
+          }
+          if (l.tail.prev.item != 8) {
+              System.out.println("tail.prev is wrong.");
+          }
+      }
+      if (l.size != 3) {
+          System.out.println("size is wrong.");
+      }
+
 
 
     l = new DList1(1, 2);
-    System.out.println("\n\n### TESTING removeFront ###\nList with 1 and 2 is "
-                       + l);
+      l.insertFront(0);
+
+      System.out.println("\n\n### TESTING removeFront ###\nList with 0, 1 and 2 is "
+              + l);
+      l.removeFront();
+      System.out.println("\nRemoving front node.\nList with 1 2 is " + l);
+      if (l.head.item != 1) {
+          System.out.println("head.item is wrong.");
+      }
+      if (l.head.prev != null) {
+          System.out.println("head.prev is wrong.");
+      }
+      if (l.tail.item != 2) {
+          System.out.println("tail.item is wrong.");
+      }
+      if (l.tail.next != null) {
+          System.out.println("tail.next is wrong.");
+      }
+      if (l.size != 2) {
+          System.out.println("size is wrong.");
+      }
 
     l.removeFront();
     System.out.println("\nRemoving front node.\nList with 2 is " + l);

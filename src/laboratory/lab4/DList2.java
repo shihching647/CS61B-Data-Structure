@@ -74,15 +74,30 @@ public class DList2 {
    *  insertFront() inserts an item at the front of a DList2.
    */
   public void insertFront(int i) {
-    // Your solution here.
+      DListNode2 newNode = new DListNode2(i);
+      DListNode2 temp = head.next;
+      newNode.prev = head;
+      newNode.next = temp;
+      head.next = newNode;
+      temp.prev = newNode;
+      size++;
   }
-
   /**
    *  removeFront() removes the first item (and first non-sentinel node) from
    *  a DList2.  If the list is empty, do nothing.
    */
   public void removeFront() {
-    // Your solution here.
+      if(size == 0) {
+          return;
+      } else {
+          DListNode2 temp = head.next;
+          DListNode2 tempNext = temp.next;
+          head.next = tempNext;
+          temp.prev = null;
+          temp.next = null;
+          tempNext.prev = head;
+          size--;
+      }
   }
 
   /**
@@ -150,11 +165,54 @@ public class DList2 {
       System.out.println("size is wrong.");
     }
 
+      l.insertFront(7);
+      System.out.println("\nInserting 7 at front.\nList with 7, 8 and 9 is " + l);
+      if (l.head.next.item != 7) {
+          System.out.println("head.next.item is wrong.");
+      }
+      if (l.head.next.prev != l.head) {
+          System.out.println("head.next.prev is wrong.");
+      }
+      if (l.head.prev.item != 9) {
+          System.out.println("head.prev.item is wrong.");
+      }
+      if (l.head.prev.next != l.head) {
+          System.out.println("head.prev.next is wrong.");
+      }
+      if (l.head.next.next.next != l.head.prev) {
+          System.out.println("l.head.next.next != l.head.prev.");
+      }
+      if (l.head.prev.prev.prev != l.head.next) {
+          System.out.println("l.head.prev.prev != l.head.next.");
+      }
+      if (l.size != 3) {
+          System.out.println("size is wrong.");
+      }
+
 
 
     l = new DList2(1, 2);
-    System.out.println("\n\n### TESTING removeFront ###\nList with 1 and 2 is "
+      l.insertFront(0);
+    System.out.println("\n\n### TESTING removeFront ###\nList with 0, 1 and 2 is "
                        + l);
+
+      l.removeFront();
+      System.out.println("\nList with 1 2 is " + l);
+      if (l.head.next.item != 1) {
+          System.out.println("head.next.item is wrong.");
+      }
+      if (l.head.next.prev != l.head) {
+          System.out.println("head.next.prev is wrong.");
+      }
+      if (l.head.prev.item != 2) {
+          System.out.println("head.prev.item is wrong.");
+      }
+      if (l.head.prev.next != l.head) {
+          System.out.println("head.prev.next is wrong.");
+      }
+      if (l.size != 2) {
+          System.out.println("size is wrong.");
+      }
 
     l.removeFront();
     System.out.println("\nList with 2 is " + l);
