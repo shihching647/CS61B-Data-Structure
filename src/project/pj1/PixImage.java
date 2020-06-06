@@ -25,6 +25,9 @@ public class PixImage {
    */
     public static final short MIN_PIXEL_VALUE = 0;
     public static final short MAX_PIXEL_VALUE = 255;
+    public static final int RED = 0;
+    public static final int GREEN = 1;
+    public static final int BLUE = 2;
     private int width;
     private int height;
     private short[][][] image;
@@ -84,7 +87,7 @@ public class PixImage {
    */
   public short getRed(int x, int y) {
     // Replace the following line with your solution.
-    return image[y][x][0];
+    return image[y][x][RED];
   }
 
   /**
@@ -96,7 +99,7 @@ public class PixImage {
    */
   public short getGreen(int x, int y) {
     // Replace the following line with your solution.
-    return image[y][x][1];
+    return image[y][x][GREEN];
   }
 
   /**
@@ -108,7 +111,17 @@ public class PixImage {
    */
   public short getBlue(int x, int y) {
     // Replace the following line with your solution.
-    return image[y][x][2];
+    return image[y][x][BLUE];
+  }
+
+
+  private short getComponent(int x, int y, int component, PixImage image) {
+      switch (component) {
+          case RED: return image.getRed(x, y);
+          case GREEN: return image.getGreen(x, y);
+          case BLUE: return image.getBlue(x, y);
+      }
+      return -1;
   }
 
   /**
@@ -131,9 +144,9 @@ public class PixImage {
               || blue < MIN_PIXEL_VALUE || blue > MAX_PIXEL_VALUE){
           return;
       }
-      image[y][x][0] = red;
-      image[y][x][1] = green;
-      image[y][x][2] = blue;
+      image[y][x][RED] = red;
+      image[y][x][GREEN] = green;
+      image[y][x][BLUE] = blue;
   }
 
   /**
@@ -193,11 +206,38 @@ public class PixImage {
       if(numIterations <= 0) {
           return this;
       }
-      PixImage newPixImage = new PixImage(this.width, this.height);
+      PixImage newImage = this;
       for(int i = 0; i < numIterations; i++) {
-
+          newImage = blurImage(newImage);
       }
-    return this;
+      return newImage;
+  }
+
+  //blur one time for an image
+  private PixImage blurImage(PixImage image) {
+      PixImage newImage = new PixImage(width, height);
+      for(int y = 0; y < height; y++) {
+          for(int x = 0; x < width; x++) {
+              newImage.setPixel(x, y, getPixelAverage(x, y, image, RED), getPixelAverage(x, y, image, GREEN), getPixelAverage(x, y, image, BLUE));
+          }
+      }
+      return newImage;
+  }
+
+  private short getPixelAverage(int x, int y, PixImage image, int component) {
+      short sum = 0;
+      short count = 0;
+      for(int i = y - 1; i <= y + 1; i++){
+          for(int j = x - 1; j <= x + 1; j++) {
+              try {
+                  sum += getComponent(j, i, component, image);
+                  count++;
+              } catch (ArrayIndexOutOfBoundsException e) {
+                  //ignore
+              }
+          }
+      }
+      return (short) (sum/count);
   }
 
   /**
@@ -242,11 +282,23 @@ public class PixImage {
    */
   public PixImage sobelEdges() {
     // Replace the following line with your solution.
-    return this;
+      PixImage newImage = new PixImage(width, height);
+      for(int y = 0; y < height; y++) {
+          for(int x = 0; x < width; x++) {
+              long energy = getEnergy(x, y, this, RED) + getEnergy(x, y, this, GREEN) + getEnergy(x, y, this, BLUE);
+              short grayValue = mag2gray(energy);
+              newImage.setPixel(x, y, grayValue, grayValue, grayValue);
+          }
+      }
+      return newImage;
     // Don't forget to use the method mag2gray() above to convert energies to
     // pixel intensities.
   }
 
+  private long getEnergy(int x, int y, PixImage image, int component) {
+      long energy = 0;
+      return 0;
+  }
 
   /**
    * TEST CODE:  YOU DO NOT NEED TO FILL IN ANY METHODS BELOW THIS POINT.
@@ -326,9 +378,6 @@ public class PixImage {
    * and Sobel) are correct.
    */
   public static void main(String[] args) {
-//      PixImage image = new PixImage(4,3);
-//      System.out.println(image);
-//      System.out.println(image.getGreen(3, 0));
     // Be forwarned that when you write arrays directly in Java as below,
     // each "row" of text is a column of your image--the numbers get
     // transposed.
