@@ -20,7 +20,7 @@ proportional to N^2, where N is the size of the list.  Because we didn't know
 about Java packages, we were unable to develop a really satisfying list ADT.
 
 In this homework, you will implement a doubly-linked list ADT that allows an
-application to holdlist nodes and hop from node to node quickly.  How do we
+application to hold list nodes and hop from node to node quickly.  How do we
 make the list an ADT if applications can get access to list nodes?  It's easy:
 we put all the list code in a package called "list", and we declare the fields
 of DListNode protected--except the "item" field, which is public.  Applications
