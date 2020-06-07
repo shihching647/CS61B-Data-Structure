@@ -49,10 +49,6 @@ public class PixImage {
       for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
           image[i][j] = new short[]{0, 0, 0};
-          //測試用!
-//            Random rand = new Random();
-//            rand.setSeed(0);
-//            image[i][j] = new short[]{(short)rand.nextInt(255), (short)rand.nextInt(255), (short)rand.nextInt(255)};
         }
 
       }

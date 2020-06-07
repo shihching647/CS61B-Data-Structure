@@ -29,9 +29,16 @@ public class RunLengthEncoding implements Iterable {
    *  Define any variables associated with a RunLengthEncoding object here.
    *  These variables MUST be private.
    */
-
-
-
+  public static final short MIN_PIXEL_VALUE = 0;
+  public static final short MAX_PIXEL_VALUE = 255;
+  public static final int PIXEL_VALUE = 0;
+  public static final int TIMES = 1;
+  private int width;
+  private int height;
+  private DList redStrip;
+  private DList greenStrip;
+  private DList blueStrip;
+  private int stripLength;
 
   /**
    *  The following methods are required for Part II.
@@ -48,6 +55,12 @@ public class RunLengthEncoding implements Iterable {
 
   public RunLengthEncoding(int width, int height) {
     // Your solution here.
+      this.width = width;
+      this.height = height;
+      redStrip = new DList(new int[]{0, width * height});
+      greenStrip = new DList(new int[]{0, width * height});
+      blueStrip = new DList(new int[]{0, width * height});
+      this.stripLength = 1;
   }
 
   /**
@@ -74,6 +87,31 @@ public class RunLengthEncoding implements Iterable {
   public RunLengthEncoding(int width, int height, int[] red, int[] green,
                            int[] blue, int[] runLengths) {
     // Your solution here.
+
+      //Test for the four arrays length
+      if(!(red.length == green.length && green.length == blue.length && blue.length == runLengths.length)) {
+          throw new IllegalArgumentException("The four input arrays must have the same length.");
+      }
+
+      //Test for the red, green, blue arrays
+      for(int i = 0; i < red.length; i++) {
+          if(red[i] < MIN_PIXEL_VALUE || red[i] > MAX_PIXEL_VALUE || green[i] < MIN_PIXEL_VALUE || green[i] > MAX_PIXEL_VALUE
+                  || blue[i] < MIN_PIXEL_VALUE || blue[i] > MAX_PIXEL_VALUE) {
+              throw new IllegalArgumentException("The red, green and blue pixel arrays should have value between 0 and 255.");
+          }
+      }
+
+      this.width = width;
+      this.height = height;
+      this.stripLength = runLengths.length;
+      redStrip = new DList();
+      greenStrip = new DList();
+      blueStrip = new DList();
+      for(int i = 0; i < stripLength; i++) {
+          redStrip.insertEnd(new int[]{ red[i], runLengths[i]});
+          greenStrip.insertEnd(new int[]{ green[i], runLengths[i]});
+          blueStrip.insertEnd(new int[]{ blue[i], runLengths[i]});
+      }
   }
 
   /**
@@ -85,7 +123,7 @@ public class RunLengthEncoding implements Iterable {
 
   public int getWidth() {
     // Replace the following line with your solution.
-    return 1;
+    return width;
   }
 
   /**
@@ -96,7 +134,7 @@ public class RunLengthEncoding implements Iterable {
    */
   public int getHeight() {
     // Replace the following line with your solution.
-    return 1;
+    return height;
   }
 
   /**
@@ -108,7 +146,8 @@ public class RunLengthEncoding implements Iterable {
    */
   public RunIterator iterator() {
     // Replace the following line with your solution.
-    return null;
+      RunIterator it = new RunIterator(redStrip, greenStrip, blueStrip, stripLength);
+      return it;
     // You'll want to construct a new RunIterator, but first you'll need to
     // write a constructor in the RunIterator class.
   }
@@ -121,7 +160,8 @@ public class RunLengthEncoding implements Iterable {
    */
   public PixImage toPixImage() {
     // Replace the following line with your solution.
-    return new PixImage(1, 1);
+      PixImage image = new PixImage(width, height);
+      return image;
   }
 
   /**

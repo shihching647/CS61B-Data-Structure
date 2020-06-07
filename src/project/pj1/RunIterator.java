@@ -26,6 +26,7 @@ package project.pj1;/* RunIterator.java */
  *  modified by setPixel().)
  */
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -36,8 +37,10 @@ public class RunIterator implements Iterator {
    *  Define any variables associated with a RunIterator object here.
    *  These variables MUST be private.
    */
-
-
+    public static final int PIXEL_VALUE = 0;
+    public static final int TIMES = 1;
+    private DListNode currentNode;
+    private DList runLength;
 
 
   /**
@@ -54,8 +57,23 @@ public class RunIterator implements Iterator {
   // constructor that you want so that your RunLengthEncoding.iterator()
   // implementation can construct a RunIterator that points to the first run of
   // the encoding.
-  RunIterator() {
+  RunIterator(DList redStrip, DList greenStrip, DList blueStrip, int stripLength) {
     // Your solution here.  You may add parameters to the method signature.
+      runLength = new DList();
+      DListNode redNode = redStrip.getHead();
+      DListNode greenNode = greenStrip.getHead();
+      DListNode blueNode = blueStrip.getHead();
+      for(int i = 0; i < stripLength; i++) {
+          int times = ((int[]) (redNode.getItem()))[TIMES];
+          int red = ((int[]) (redNode.getItem()))[PIXEL_VALUE];
+          int green = ((int[]) (greenNode.getItem()))[PIXEL_VALUE];
+          int blue = ((int[]) (blueNode.getItem()))[PIXEL_VALUE];
+          runLength.insertEnd(new int[]{times, red, green, blue});
+          redNode = redNode.getNext();
+          greenNode = greenNode.getNext();
+          blueNode = blueNode.getNext();
+      }
+      currentNode = runLength.getHead();
   }
 
   /**
@@ -66,7 +84,11 @@ public class RunIterator implements Iterator {
    */
   public boolean hasNext() {
     // Replace the following line with your solution.
-    return false;
+      if(currentNode == null) {
+          return false;
+      } else {
+          return true;
+      }
   }
 
   /**
@@ -96,7 +118,12 @@ public class RunIterator implements Iterator {
     // call to next() will return the subsequent run.
 
     // Replace the following line with your solution.
-    return new int[4];
+      if(currentNode == null) {
+          throw new NoSuchElementException("All runs have been returned!!");
+      }
+      int[] result = (int[]) currentNode.getItem();
+      currentNode = currentNode.getNext();
+      return result;
   }
 
   /**
@@ -107,5 +134,21 @@ public class RunIterator implements Iterator {
    */
   public void remove() {
     throw new UnsupportedOperationException();
+  }
+
+  public static void main(String[] args) {
+      DList redStrip = new DList();
+      redStrip.insertEnd(new int[]{1,1});
+      redStrip.insertEnd(new int[]{2,2});
+      DList greenStrip = new DList();
+      greenStrip.insertEnd(new int[]{3,1});
+      greenStrip.insertEnd(new int[]{4,2});
+      DList blueStrip = new DList();
+      blueStrip.insertEnd(new int[]{5,1});
+      blueStrip.insertEnd(new int[]{6,2});
+      RunIterator it = new RunIterator(redStrip, greenStrip,blueStrip, 2);
+      while(it.hasNext()) {
+          System.out.println(Arrays.toString(it.next()));
+      }
   }
 }
