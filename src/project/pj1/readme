@@ -219,6 +219,7 @@ argument specifies the number of iterations of your box blurring filter to
 perform.  For example, if you run
 
     java -cp ".:jai_core.jar:jai_codec.jar" Blur image.tiff 3
+    (Windows: java -cp ".;jai_core.jar;jai_codec.jar" project.pj1.Blur image.tiff 3)且檔案須放在project/pj1/
 
 then Blur will load the image from image.tiff, perform three iterations of
 blurring, write the blurred image to a file named blur_image.tiff, and display

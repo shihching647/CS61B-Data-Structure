@@ -115,7 +115,7 @@ public class PixImage {
   }
 
 
-  private short getComponent(int x, int y, int component, PixImage image) {
+  public static short getPixelComponent(int x, int y, int component, PixImage image) {
       switch (component) {
           case RED: return image.getRed(x, y);
           case GREEN: return image.getGreen(x, y);
@@ -230,7 +230,7 @@ public class PixImage {
       for(int i = y - 1; i <= y + 1; i++){
           for(int j = x - 1; j <= x + 1; j++) {
               try {
-                  sum += getComponent(j, i, component, image);
+                  sum += PixImage.getPixelComponent(j, i, component, image);
                   count++;
               } catch (ArrayIndexOutOfBoundsException e) {
                   //ignore
@@ -282,12 +282,13 @@ public class PixImage {
    */
   public PixImage sobelEdges() {
     // Replace the following line with your solution.
+      PixImage reflectedImage = getReflectedImage(this);
       PixImage newImage = new PixImage(width, height);
-      for(int y = 0; y < height; y++) {
-          for(int x = 0; x < width; x++) {
-              long energy = getEnergy(x, y, this, RED) + getEnergy(x, y, this, GREEN) + getEnergy(x, y, this, BLUE);
+      for(int y = 1; y < height + 1; y++) {
+          for(int x = 1; x < width + 1; x++) {
+              long energy = getEnergy(x, y, reflectedImage, RED) + getEnergy(x, y, reflectedImage, GREEN) + getEnergy(x, y, reflectedImage, BLUE);
               short grayValue = mag2gray(energy);
-              newImage.setPixel(x, y, grayValue, grayValue, grayValue);
+              newImage.setPixel(x - 1, y - 1, grayValue, grayValue, grayValue);
           }
       }
       return newImage;
@@ -295,9 +296,44 @@ public class PixImage {
     // pixel intensities.
   }
 
-  private long getEnergy(int x, int y, PixImage image, int component) {
-      long energy = 0;
-      return 0;
+  private PixImage getReflectedImage(PixImage image) {
+      PixImage reflectedImage = new PixImage(image.getWidth() + 2, image.getHeight() + 2);
+      for(int x = 1; x <= width; x++) {
+          //第一列
+          reflectedImage.setPixel(x, 0, image.getRed(x - 1, 0), image.getGreen(x - 1, 0), image.getBlue(x - 1, 0));
+          //最後一列
+          reflectedImage.setPixel(x, height + 1, image.getRed(x - 1, height - 1), image.getGreen(x - 1, height - 1), image.getBlue(x - 1, height - 1));
+      }
+      for(int y = 1; y <= height; y++) {
+          //第一行
+          reflectedImage.setPixel(0, y, image.getRed(0, y - 1), image.getGreen(0, y - 1), image.getBlue(0, y - 1));
+          //最後一行
+          reflectedImage.setPixel(width + 1, y, image.getRed(width - 1, y - 1), image.getGreen(width - 1, y - 1), image.getBlue(width - 1, y - 1));
+      }
+      //四個corner
+      reflectedImage.setPixel(0, 0, image.getRed(0, 0), image.getGreen(0, 0), image.getBlue(0, 0));
+      reflectedImage.setPixel(width + 1, 0, image.getRed(width - 1, 0), image.getGreen(width - 1, 0), image.getBlue(width - 1, 0));
+      reflectedImage.setPixel(0, height + 1, image.getRed(0, height - 1), image.getGreen(0, height - 1), image.getBlue(0, height - 1));
+      reflectedImage.setPixel(width + 1, height + 1, image.getRed(width - 1, height - 1), image.getGreen(width - 1, height - 1), image.getBlue(width - 1, height - 1));
+      //剩下的
+      for(int y = 1; y <= height; y++) {
+          for(int x = 1; x <= width; x++) {
+              reflectedImage.setPixel(x, y, image.getRed(x - 1, y - 1), image.getGreen(x - 1 , y - 1), image.getBlue(x - 1, y - 1));
+          }
+      }
+      return reflectedImage;
+  }
+  //針對傳入的reflectedImage去計算每一點的能量
+  private long getEnergy(int x, int y, PixImage reflectedImage, int component) {
+      long gx = 0;
+      long gy = 0;
+      gx = gx + 1 * PixImage.getPixelComponent(x - 1, y - 1, component, reflectedImage) - 1 * PixImage.getPixelComponent(x + 1, y - 1, component, reflectedImage)
+              + 2 * PixImage.getPixelComponent(x - 1, y, component, reflectedImage) - 2 * PixImage.getPixelComponent(x + 1, y, component, reflectedImage)
+              + 1 * PixImage.getPixelComponent(x - 1, y + 1, component, reflectedImage) - 1 * PixImage.getPixelComponent(x + 1, y + 1, component, reflectedImage);
+      gy = gy + 1 * PixImage.getPixelComponent(x - 1, y - 1, component, reflectedImage) + 2 * PixImage.getPixelComponent(x, y - 1, component, reflectedImage)
+              + 1 * PixImage.getPixelComponent(x + 1, y - 1, component, reflectedImage) - 1 * PixImage.getPixelComponent(x - 1, y + 1, component, reflectedImage)
+              - 2 * PixImage.getPixelComponent(x, y + 1, component, reflectedImage) - PixImage.getPixelComponent(x + 1, y + 1, component, reflectedImage);
+      return gx * gx + gy * gy;
   }
 
   /**
