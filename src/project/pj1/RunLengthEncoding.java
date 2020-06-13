@@ -21,7 +21,7 @@ package project.pj1;/* RunLengthEncoding.java */
  *  See the README file accompanying this project for additional details.
  */
 
-import java.util.Iterator;
+import java.util.Arrays;
 
 public class RunLengthEncoding implements Iterable {
 
@@ -33,12 +33,15 @@ public class RunLengthEncoding implements Iterable {
   public static final short MAX_PIXEL_VALUE = 255;
   public static final int PIXEL_VALUE = 0;
   public static final int TIMES = 1;
+  public static final int RED = 0;
+  public static final int GREEN = 1;
+  public static final int BLUE = 2;
   private int width;
   private int height;
   private DList redStrip;
   private DList greenStrip;
   private DList blueStrip;
-  private int stripLength;
+  private int stripLength; //只針對灰階圖使用(因為RGB長度都相同)
 
   /**
    *  The following methods are required for Part II.
@@ -146,7 +149,8 @@ public class RunLengthEncoding implements Iterable {
    */
   public RunIterator iterator() {
     // Replace the following line with your solution.
-      RunIterator it = new RunIterator(redStrip, greenStrip, blueStrip, stripLength);
+      System.out.println("iterator被呼叫!!!");
+      RunIterator it = new RunIterator(redStrip, greenStrip, blueStrip, stripLength); //stripLength只針對灰階圖使用(因為RGB長度都相同)
       return it;
     // You'll want to construct a new RunIterator, but first you'll need to
     // write a constructor in the RunIterator class.
@@ -161,7 +165,36 @@ public class RunLengthEncoding implements Iterable {
   public PixImage toPixImage() {
     // Replace the following line with your solution.
       PixImage image = new PixImage(width, height);
+      buildPixel(image, RED);
+      buildPixel(image, GREEN);
+      buildPixel(image, BLUE);
       return image;
+  }
+
+  private void buildPixel(PixImage image, int component) {
+      DList strip = new DList();
+      switch (component) {
+          case RED: strip = redStrip; break;
+          case GREEN: strip = greenStrip; break;
+          case BLUE: strip = blueStrip; break;
+      }
+      DListNode node = strip.getHead();
+      int currentLength = 0;
+      while(node != null) {
+          int l = ((int[]) node.getItem())[TIMES];
+          short pixelValue = (short)((int[]) node.getItem())[PIXEL_VALUE];
+          for(int x = currentLength; x < currentLength + l; x++) {
+              int x_loc = x % width;
+              int y_loc = x / width;
+              switch (component) {
+                  case RED: image.setPixel(x_loc, y_loc, pixelValue, image.getGreen(x_loc, y_loc), image.getBlue(x_loc, y_loc)); break;
+                  case GREEN: image.setPixel(x_loc, y_loc, image.getRed(x_loc, y_loc), pixelValue, image.getBlue(x_loc, y_loc)); break;
+                  case BLUE: image.setPixel(x_loc, y_loc, image.getRed(x_loc, y_loc), image.getGreen(x_loc, y_loc), pixelValue); break;
+              }
+          }
+          currentLength += l;
+          node = node.getNext();
+      }
   }
 
   /**
@@ -175,7 +208,25 @@ public class RunLengthEncoding implements Iterable {
    */
   public String toString() {
     // Replace the following line with your solution.
-    return "";
+      StringBuilder sb = new StringBuilder();
+      DListNode redNode = redStrip.getHead();
+      while (redNode != null) {
+          sb.append(Arrays.toString((int[])redNode.getItem()) + ", ");
+          redNode = redNode.getNext();
+      }
+      sb.append("\n");
+      DListNode greenNode = greenStrip.getHead();
+      while (greenNode != null) {
+          sb.append(Arrays.toString((int[])greenNode.getItem()) + ", ");
+          greenNode = greenNode.getNext();
+      }
+      sb.append("\n");
+      DListNode blueNode = greenStrip.getHead();
+      while (blueNode != null) {
+          sb.append(Arrays.toString((int[])blueNode.getItem()) + ", ");
+          blueNode = blueNode.getNext();
+      }
+      return sb.toString();
   }
 
 
@@ -195,7 +246,35 @@ public class RunLengthEncoding implements Iterable {
   public RunLengthEncoding(PixImage image) {
     // Your solution here, but you should probably leave the following line
     // at the end.
-    check();
+      this.width = image.getWidth();
+      this.height = image.getHeight();
+      redStrip = getStrip(image, RED);
+      greenStrip = getStrip(image, GREEN);
+      blueStrip = getStrip(image, BLUE);
+      check();
+  }
+
+  private DList getStrip(PixImage image, int component) {
+      DList strip = new DList();
+      short curPixel = PixImage.getPixelComponent(0, 0, component, image);
+      int length = 0;
+      int stripLength = 0;
+      for(int y = 0; y < height; y++) {
+          for(int x = 0; x < width; x++) {
+              if(PixImage.getPixelComponent(x, y, component, image) == curPixel) {
+                  length += 1;
+              } else {
+                  strip.insertEnd(new int[]{curPixel, length});
+                  stripLength++;
+                  curPixel = PixImage.getPixelComponent(x, y, component, image);
+                  length = 1;
+              }
+          }
+      }
+      strip.insertEnd(new int[]{curPixel, length}); //最後要再多跑一次, 把最後一個run加回去
+      stripLength++;
+      this.stripLength = stripLength;  //stripLength只針對灰階圖使用(因為RGB長度都相同)
+      return strip;
   }
 
   /**
@@ -204,8 +283,42 @@ public class RunLengthEncoding implements Iterable {
    *  all run lengths does not equal the number of pixels in the image.
    */
   public void check() {
-    // Your solution here.
+      checkInvariants(RED);
+      checkInvariants(GREEN);
+      checkInvariants(BLUE);
   }
+
+  private void checkInvariants(int component) {
+      DList strip = new DList();
+      switch (component) {
+          case RED: strip = redStrip; break;
+          case GREEN: strip = greenStrip; break;
+          case BLUE: strip = blueStrip; break;
+      }
+      DListNode node = strip.getHead();
+      int totalLength = 0;
+      while (node != null) {
+          //1.檢查任兩個run的pixel value絕對不一樣
+          if(node != strip.getHead() && node != strip.getTail()){
+              int prev = ((int[])node.getPrev().getItem())[PIXEL_VALUE];
+              int cur = ((int[])node.getItem())[PIXEL_VALUE];
+              int next = ((int[])node.getNext().getItem())[PIXEL_VALUE];
+              if(prev == cur || next == cur){
+                  System.err.println("錯誤!有兩個run的pixel value相同!!");
+              }
+          }
+          //計算length
+          int length = ((int[])node.getItem())[TIMES];
+          if(length < 1) System.err.println("有某一個run的長度小於1!!"); //2.檢查每一個run的length都不小於1
+          totalLength += length;
+          node = node.getNext();
+      }
+      //3.檢查總長度是否等於 width * height
+      if(totalLength != width * height) {
+          System.err.println("總長度錯誤!!");
+      }
+  }
+
 
 
   /**
@@ -228,9 +341,185 @@ public class RunLengthEncoding implements Iterable {
   public void setPixel(int x, int y, short red, short green, short blue) {
     // Your solution here, but you should probably leave the following line
     //   at the end.
-    check();
+      int length = (y * width) + (x + 1);
+//      setPixelByLength(length, RED, red);
+//      setPixelByLength(length, GREEN, green);
+//      setPixelByLength(length, BLUE, blue);
+      setPixelByLength2(length, RED, red);
+      setPixelByLength2(length, GREEN, green);
+      setPixelByLength2(length, BLUE, blue);
+      check();
   }
 
+  private void setPixelByLength(int length, int component, short value) {
+      DList strip = new DList();
+      switch (component) {
+          case RED: strip = redStrip; break;
+          case GREEN: strip = greenStrip; break;
+          case BLUE: strip = blueStrip; break;
+      }
+      DListNode node = strip.getHead();
+      int curLength = 0;
+      while(curLength < length) {
+          curLength += ((int[]) node.getItem())[TIMES];
+          node = node.getNext();
+      }
+
+      short prevPixel = -1, originalPixel = -1,  nextPixel = -1;
+      int prevLength = -1, originalLength = -1, nextLength = -1;
+      DListNode prevNode = null, originalNode = null, nextNode = null;
+      if(node == null) {
+          node = new DListNode();
+          node.setPrev(strip.getTail());
+          originalNode = strip.getTail();
+          originalPixel = (short) ((int[]) originalNode.getItem())[PIXEL_VALUE];
+          originalLength = ((int[]) originalNode.getItem())[TIMES];
+          prevNode = originalNode.getPrev();
+          prevPixel = (short) ((int[]) prevNode.getItem())[PIXEL_VALUE];
+          prevLength = ((int[])prevNode.getItem())[TIMES];
+      }else {
+          if(node.getPrev() != strip.getHead()){
+              prevNode = node.getPrev().getPrev();
+              prevPixel = (short) ((int[]) prevNode.getItem())[PIXEL_VALUE];
+              prevLength = ((int[])prevNode.getItem())[TIMES];
+          }
+          if(node != null){
+              nextNode = node;
+              nextPixel = (short) ((int[]) nextNode.getItem())[PIXEL_VALUE];
+              nextLength = ((int[]) nextNode.getItem())[TIMES];
+          }
+          if(node != strip.getHead()){
+              originalNode = node.getPrev();
+              originalPixel = (short) ((int[]) originalNode.getItem())[PIXEL_VALUE];
+              originalLength = ((int[]) originalNode.getItem())[TIMES];
+          }
+      }
+
+      if(originalPixel != value) {
+          if(prevPixel != -1 && prevPixel == value && originalLength == 1){
+              node.getPrev().getPrev().setItem(new int[]{prevPixel, prevLength + originalLength});
+              node.getPrev().getPrev().setNext(node);
+              node.setPrev(node.getPrev().getPrev());
+              if(originalNode != null){
+                  strip.remove(originalNode);
+              }
+          } else if(nextPixel != -1 && nextPixel == value) {
+              node.setItem(new int[]{nextPixel, nextLength + originalLength});
+              if(node.getPrev() != strip.getHead()){
+                  node.getPrev().getPrev().setNext(node);
+                  node.setPrev(node.getPrev().getPrev());
+              }
+              if(originalNode != null){
+                  strip.remove(originalNode);
+              }
+          } else {
+              if(originalLength == 1) {
+                  node.getPrev().setItem(new int[]{value, 1});
+              } else {
+                  if(originalNode != null){
+                      strip.remove(originalNode);
+                  }
+                  DListNode newNode = new DListNode(new int[]{value, 1});
+                  DListNode originalNode2 = new DListNode(new int[]{originalPixel, curLength - length});
+                  DListNode originalNode1 = new DListNode(new int[]{originalPixel, originalLength - 1 - (curLength - length)});
+                  if(((int[]) originalNode1.getItem())[TIMES] > 0 && ((int[]) originalNode2.getItem())[TIMES] > 0) {
+                      strip.insertAfter(prevNode, originalNode1);
+                      strip.insertAfter(originalNode1, newNode);
+                      strip.insertAfter(newNode, originalNode2);
+                  } else if(((int[]) originalNode1.getItem())[TIMES] > 0){
+                      strip.insertAfter(prevNode, originalNode1);
+                      strip.insertAfter(originalNode1, newNode);
+                  } else if(((int[]) originalNode2.getItem())[TIMES] > 0) {
+                      strip.insertAfter(prevNode, newNode);
+                      strip.insertAfter(newNode, originalNode2);
+                  }
+              }
+          }
+      }
+      verifyDuplicate(strip);
+      verifyLengthZero(strip);
+  }
+
+    private void setPixelByLength2(int length, int component, short value) {
+        DList strip = new DList();
+        switch (component) {
+            case RED: strip = redStrip; break;
+            case GREEN: strip = greenStrip; break;
+            case BLUE: strip = blueStrip; break;
+        }
+        DListNode node = strip.getHead();
+        int curLength = 0;
+        while(curLength < length) {
+            curLength += ((int[]) node.getItem())[TIMES];
+            node = node.getNext();
+        }
+
+        short prevPixel = -1, originalPixel = -1,  nextPixel = -1;
+        int prevLength = -1, originalLength = -1, nextLength = -1;
+        DListNode prevNode = null, originalNode = null, nextNode = null;
+
+        if(node == null) {
+            node = new DListNode();
+            node.setPrev(strip.getTail());
+            originalNode = strip.getTail();
+            originalPixel = (short) ((int[]) originalNode.getItem())[PIXEL_VALUE];
+            originalLength = ((int[]) originalNode.getItem())[TIMES];
+            prevNode = originalNode.getPrev();
+            prevPixel = (short) ((int[]) prevNode.getItem())[PIXEL_VALUE];
+            prevLength = ((int[])prevNode.getItem())[TIMES];
+        }else {
+            if(node.getPrev() != strip.getHead()){
+                prevNode = node.getPrev().getPrev();
+                prevPixel = (short) ((int[]) prevNode.getItem())[PIXEL_VALUE];
+                prevLength = ((int[])prevNode.getItem())[TIMES];
+            }
+            if(node != null){
+                nextNode = node;
+                nextPixel = (short) ((int[]) nextNode.getItem())[PIXEL_VALUE];
+                nextLength = ((int[]) nextNode.getItem())[TIMES];
+            }
+            if(node != strip.getHead()){
+                originalNode = node.getPrev();
+                originalPixel = (short) ((int[]) originalNode.getItem())[PIXEL_VALUE];
+                originalLength = ((int[]) originalNode.getItem())[TIMES];
+            }
+        }
+        verifyDuplicate(strip);
+        verifyLengthZero(strip);
+    }
+
+  private void verifyDuplicate(DList strip) {
+      DListNode node = strip.getHead();
+      while (node != strip.getTail()) {
+          int pixel = ((int[]) node.getItem())[PIXEL_VALUE];
+          int length = ((int[]) node.getItem())[TIMES];
+          DListNode nextNode = node.getNext();
+          int nextPixel = ((int[]) nextNode.getItem())[PIXEL_VALUE];
+          int nextLength = ((int[]) nextNode.getItem())[TIMES];
+          DListNode newNode;
+          if(pixel == nextPixel) {
+              newNode = new DListNode(new int[]{pixel, length + nextLength});
+              strip.insertAfter(nextNode, newNode);
+              strip.remove(node);
+              strip.remove(nextNode);
+              node = newNode;
+              continue;
+          }
+          node = node.getNext();
+      }
+  }
+
+  private void verifyLengthZero(DList strip) {
+      DListNode node = strip.getHead();
+      while(node != strip.getTail()) {
+          int length = ((int[]) node.getItem())[TIMES];
+          DListNode nextNode = node.getNext();
+          if(length == 0) {
+              strip.remove(node);
+          }
+          node = nextNode;
+      }
+  }
 
   /**
    * TEST CODE:  YOU DO NOT NEED TO FILL IN ANY METHODS BELOW THIS POINT.

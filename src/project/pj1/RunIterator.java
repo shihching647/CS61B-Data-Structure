@@ -57,6 +57,14 @@ public class RunIterator implements Iterator {
   // constructor that you want so that your RunLengthEncoding.iterator()
   // implementation can construct a RunIterator that points to the first run of
   // the encoding.
+
+    /**
+     * 初始化Iterator(目前只適用於灰階圖, 所以RGB三個一起跑迴圈, sreipLength為RGB的run的長度(三個都會一樣))
+     * @param redStrip
+     * @param greenStrip
+     * @param blueStrip
+     * @param stripLength
+     */
   RunIterator(DList redStrip, DList greenStrip, DList blueStrip, int stripLength) {
     // Your solution here.  You may add parameters to the method signature.
       runLength = new DList();
@@ -69,9 +77,11 @@ public class RunIterator implements Iterator {
           int green = ((int[]) (greenNode.getItem()))[PIXEL_VALUE];
           int blue = ((int[]) (blueNode.getItem()))[PIXEL_VALUE];
           runLength.insertEnd(new int[]{times, red, green, blue});
-          redNode = redNode.getNext();
-          greenNode = greenNode.getNext();
-          blueNode = blueNode.getNext();
+          if(redNode != null && greenNode != null && blueNode != null) {
+              redNode = redNode.getNext();
+              greenNode = greenNode.getNext();
+              blueNode = blueNode.getNext();
+          }
       }
       currentNode = runLength.getHead();
   }
@@ -112,7 +122,7 @@ public class RunIterator implements Iterator {
    *  of your RunLengthEncoding data structure!  It must be freshly constructed
    *  for the sole purpose of returning four ints.
    */
-  public int[] next() {
+  public int[] next() throws NoSuchElementException{
     // Construct a new array of 4 ints, fill in its values, and return it.
     // Don't forget to advance the RunIterator's pointer so that the next
     // call to next() will return the subsequent run.
@@ -122,6 +132,7 @@ public class RunIterator implements Iterator {
           throw new NoSuchElementException("All runs have been returned!!");
       }
       int[] result = (int[]) currentNode.getItem();
+      System.out.println(Arrays.toString(result));
       currentNode = currentNode.getNext();
       return result;
   }

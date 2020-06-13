@@ -211,6 +211,7 @@ against the JAI image libraries in the .jar files we have included, which
 may require you to add the .jar files to your "classpath".  In Unix:
 
     javac -cp "jai_core.jar:jai_codec.jar" *.java
+    (Windows: javac -encoding utf-8 -cp ".;jai_core.jar;jai_codec.jar" *.java)(因為預設編碼是MS950)
 
 Both programs take one or two command-line arguments.  The first argument
 specifies the name of an input image file in TIFF format.  (If you specify no
@@ -252,7 +253,7 @@ necessary to complete the project, but if you want more control over writing
 images to files for your own entertainment, it is easy to modify Blur.java or
 Sobel.java for that purpose.
 
-Part II:  Converting a Run-Length Encoding to an Image
+Part II:  Converting a Run-Length Encoding to an Image(只針對灰階圖)
 ======================================================
 This part is worth 25% of your total score.  (5 points out of 20).
 

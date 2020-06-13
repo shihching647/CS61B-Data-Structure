@@ -165,7 +165,7 @@ public class PixImage {
               sb.append("\n\n|");
           }
       }
-      return sb.toString();
+      return sb.append("\n").toString();
   }
 
   /**

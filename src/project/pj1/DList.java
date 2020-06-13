@@ -153,6 +153,53 @@ public class DList {
       size++;
   }
 
+    public void insertAfter(DListNode positionNode, DListNode addedNode) throws IllegalArgumentException {
+        if(positionNode == null) {
+            addedNode.setNext(head);
+            head.setPrev(addedNode);
+            head = addedNode;
+            size++;
+            return;
+        }
+        if(positionNode == tail) {
+            addedNode.setPrev(tail);
+            tail.setNext(addedNode);
+            tail = addedNode;
+            size++;
+            return;
+        }
+        DListNode temp = positionNode.getNext();
+        addedNode.setPrev(positionNode);
+        addedNode.setNext(temp);
+        positionNode.setNext(addedNode);
+        temp.setPrev(addedNode);
+        size++;
+    }
+
+    public void remove(DListNode node) {
+        if(node == head) {
+            DListNode temp = head.getNext();
+            temp.setPrev(null);
+            head = temp;
+            size--;
+            return;
+        }
+        if(node == tail) {
+            DListNode temp = tail.getPrev();
+            temp.setNext(null);
+            tail = temp;
+            size--;
+            return;
+        }
+        DListNode prev = node.getPrev();
+        DListNode next = node.getNext();
+        prev.setNext(next);
+        node.setPrev(null);
+        node.setNext(null);
+        next.setPrev(prev);
+        size--;
+    }
+
   /**
    *  toString() returns a String representation of this DList.
    *
