@@ -342,12 +342,12 @@ public class RunLengthEncoding implements Iterable {
     // Your solution here, but you should probably leave the following line
     //   at the end.
       int length = (y * width) + (x + 1);
-//      setPixelByLength(length, RED, red);
-//      setPixelByLength(length, GREEN, green);
-//      setPixelByLength(length, BLUE, blue);
-      setPixelByLength2(length, RED, red);
-      setPixelByLength2(length, GREEN, green);
-      setPixelByLength2(length, BLUE, blue);
+      setPixelByLength(length, RED, red);
+      setPixelByLength(length, GREEN, green);
+      setPixelByLength(length, BLUE, blue);
+//      setPixelByLength2(length, RED, red);
+//      setPixelByLength2(length, GREEN, green);
+//      setPixelByLength2(length, BLUE, blue);
       check();
   }
 
@@ -364,11 +364,13 @@ public class RunLengthEncoding implements Iterable {
           curLength += ((int[]) node.getItem())[TIMES];
           node = node.getNext();
       }
-
+      //此時node已經跑到下一個了, 故要改的node為前一個node, 所以originalNode = node.getPrev();
+      //先將需要的變數都定義好
       short prevPixel = -1, originalPixel = -1,  nextPixel = -1;
       int prevLength = -1, originalLength = -1, nextLength = -1;
       DListNode prevNode = null, originalNode = null, nextNode = null;
-      if(node == null) {
+
+      if(node == null) { //node已經超過tail(要改的originalNode為tail), 直接new一個node並設他的prev為tail
           node = new DListNode();
           node.setPrev(strip.getTail());
           originalNode = strip.getTail();
@@ -378,17 +380,16 @@ public class RunLengthEncoding implements Iterable {
           prevPixel = (short) ((int[]) prevNode.getItem())[PIXEL_VALUE];
           prevLength = ((int[])prevNode.getItem())[TIMES];
       }else {
-          if(node.getPrev() != strip.getHead()){
+          nextNode = node;
+          nextPixel = (short) ((int[]) nextNode.getItem())[PIXEL_VALUE];
+          nextLength = ((int[]) nextNode.getItem())[TIMES];
+
+          if(node.getPrev() != strip.getHead()){  //要改的originalNode不為head時才會有preNode
               prevNode = node.getPrev().getPrev();
               prevPixel = (short) ((int[]) prevNode.getItem())[PIXEL_VALUE];
               prevLength = ((int[])prevNode.getItem())[TIMES];
           }
-          if(node != null){
-              nextNode = node;
-              nextPixel = (short) ((int[]) nextNode.getItem())[PIXEL_VALUE];
-              nextLength = ((int[]) nextNode.getItem())[TIMES];
-          }
-          if(node != strip.getHead()){
+          if(node != strip.getHead()){           //排除要改的originalNode第一個node的特殊情況
               originalNode = node.getPrev();
               originalPixel = (short) ((int[]) originalNode.getItem())[PIXEL_VALUE];
               originalLength = ((int[]) originalNode.getItem())[TIMES];
