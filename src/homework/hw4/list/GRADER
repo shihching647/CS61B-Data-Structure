@@ -1,0 +1,15 @@
+Step 1.Create two DList list1 and list2.
+Step 2.Both two lists are inserted one element.
+Step 3.Use front() method to get list1 first element and store in as local variable.
+Step 4.Use remove() method on list2 to remove the ListNode which is not in list2.(The ListNode which is got from Step.3)
+
+Example:
+
+    public static void main(String[] args) {
+        DList list1 = new DList();
+        DList list2 = new DList();
+        list1.insertFront(1);
+        list2.insertFront(2);
+        list1.remove(list2.front());
+        System.out.println(list1 + "size = " + list1.length()); // Violate the invariants
+    }
