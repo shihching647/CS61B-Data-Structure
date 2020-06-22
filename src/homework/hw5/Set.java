@@ -1,6 +1,6 @@
 package homework.hw5;/* Set.java */
 
-import list.*;
+import homework.hw5.list.*;
 
 /**
  *  A Set is a collection of Comparable elements stored in sorted order.
@@ -8,6 +8,7 @@ import list.*;
  **/
 public class Set {
   /* Fill in the data fields here. */
+    List list;
 
   /**
    * Set ADT invariants:
@@ -24,6 +25,7 @@ public class Set {
    **/
   public Set() { 
     // Your solution here.
+      list = new DList();
   }
 
   /**
@@ -33,7 +35,7 @@ public class Set {
    **/
   public int cardinality() {
     // Replace the following line with your solution.
-    return 0;
+    return list.length();
   }
 
   /**
@@ -46,6 +48,21 @@ public class Set {
    **/
   public void insert(Comparable c) {
     // Your solution here.
+      try {
+          ListNode node = list.front();
+          while (node.isValidNode()) {
+              if (c.compareTo(node.item()) == 0) {
+                  return;
+              } else if (c.compareTo(node.item()) < 0) {
+                  node.insertBefore(c);
+                  return;
+              }
+              node = node.next();
+          }
+          list.insertBack(c);
+      } catch (InvalidNodeException e) {
+          e.printStackTrace();
+      }
   }
 
   /**
@@ -65,6 +82,31 @@ public class Set {
    **/
   public void union(Set s) {
     // Your solution here.
+      try{
+          ListNode otherNode = s.list.front();
+          ListNode thisNode = list.front();
+          while(otherNode.isValidNode() && thisNode.isValidNode()) {
+              Comparable otherValue = (Comparable) otherNode.item();
+              if(otherValue.compareTo(thisNode.item()) == 0) {
+                  thisNode = thisNode.next();
+                  otherNode = otherNode.next();
+              } else if(otherValue.compareTo(thisNode.item()) > 0) {
+                  if(!thisNode.next().isValidNode()) {
+                      thisNode.insertAfter(otherNode);
+                  }
+                  if(otherValue.compareTo(thisNode.next().item()) < 0) {
+                      thisNode.insertAfter(otherNode);
+                      thisNode = thisNode.next().next();
+                      otherNode = otherNode.next();
+                  }
+              } else {
+
+              }
+          }
+      } catch(InvalidNodeException e) {
+          e.printStackTrace();
+      }
+
   }
 
   /**
@@ -101,7 +143,18 @@ public class Set {
    **/
   public String toString() {
     // Replace the following line with your solution.
-    return "";
+      StringBuilder sb = new StringBuilder("{  ");
+      try{
+          ListNode node = list.front();
+          while(node.isValidNode()) {
+              sb.append(node.item() + "  ");
+              node = node.next();
+          }
+          sb.append("}");
+      } catch(InvalidNodeException e) {
+          e.printStackTrace();
+      }
+      return sb.toString();
   }
 
   public static void main(String[] argv) {
@@ -123,13 +176,19 @@ public class Set {
     s3.insert(new Integer(8));
     System.out.println("Set s3 = " + s3);
 
-    s.union(s2);
-    System.out.println("After s.union(s2), s = " + s);
-
-    s.intersect(s3);
-    System.out.println("After s.intersect(s3), s = " + s);
+//    s.union(s2);
+//    System.out.println("After s.union(s2), s = " + s);
+//
+//    s.intersect(s3);
+//    System.out.println("After s.intersect(s3), s = " + s);
 
     System.out.println("s.cardinality() = " + s.cardinality());
     // You may want to add more (ungraded) test code here.
+      System.out.println("s2.cardinality() = " + s2.cardinality());
+      System.out.println("s3.cardinality() = " + s3.cardinality());
+
+      Set s4 = new Set();
+      System.out.println("Set s4 = " + s4);
+      System.out.println("s4.cardinality() = " + s4.cardinality());
   }
 }
