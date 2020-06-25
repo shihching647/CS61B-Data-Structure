@@ -152,7 +152,7 @@ public class DListNode extends ListNode {
       DListNode nextNode = next;
       prevNode.next = next;
       nextNode.prev = prev;
-
+      myList.size--;
     // Make this node an invalid node, so it cannot be used to corrupt myList.
     myList = null;
     // Set other references to null to improve garbage collection.
