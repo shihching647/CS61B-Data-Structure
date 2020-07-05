@@ -1,36 +1,28 @@
 package textbook.ch5_1;
-import java.util.Queue;
 
-public class ArrayStack<E> implements Stack<E>{
-    public static final int CAPACITY = 1000; // default array capacity
-    protected int capacity; // The actual capacity of the stack array
-    protected E[] stack;    // Generic array used to implement the stack
-    protected int top = -1; // index for the top of the stack
+public class NodeStack<E> implements Stack<E>{
+    private Node<E> top;
+    private int size;
 
-    public ArrayStack() {
-        this(CAPACITY);
+    public NodeStack() {
+        top = null;
+        size = 0;
     }
 
-    public ArrayStack(int capacity) {
-        this.capacity = capacity;
-        stack = (E[]) new Object[CAPACITY];
-    }
     @Override
     public int size() {
-        return top + 1;
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return top < 0;
+        return size == 0;
     }
 
     @Override
-    public void push(E element) throws FullStackException{
-        if(size() == capacity) {
-            throw new FullStackException("Stack is full");
-        }
-        stack[++top] = element;
+    public void push(E element) {
+        top = new Node<E>(element, top);
+        size++;
     }
 
     @Override
@@ -38,7 +30,7 @@ public class ArrayStack<E> implements Stack<E>{
         if(isEmpty()) {
             throw new EmptyStackException("Stack is empty.");
         }
-        return stack[top];
+        return top.getElement();
     }
 
     @Override
@@ -46,17 +38,21 @@ public class ArrayStack<E> implements Stack<E>{
         if(isEmpty()) {
             throw new EmptyStackException("Stack is empty.");
         }
-        E element = stack[top];
-        stack[top--] = null;
-        return element;
+        Node<E> temp = top;
+        temp.setNext(null);
+        top = top.getNext();
+        size--;
+        return temp.getElement();
     }
 
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
-        if(size() > 0 ) sb.append(stack[0]);
+        if(size() > 0) sb.append(top.getElement().toString());
         if(size() > 1) {
-            for(int i = 1; i < size(); i++) {
-                sb.append(", " + stack[i]);
+            while(true) {
+                top = top.getNext();
+                if(top == null) break;
+                sb.append(", " + top.getElement().toString());
             }
         }
         return sb.append("]").toString();
@@ -71,8 +67,8 @@ public class ArrayStack<E> implements Stack<E>{
 
     public static void main(String[] args) {
         Object o;
-        ArrayStack<Integer> stack = new ArrayStack<>();
-        stack.status("new ArrayStack<Integer> stack", null);
+        NodeStack<Integer> stack = new NodeStack<>();
+        stack.status("new NodeStack<Integer> stack", null);
         stack.push(7);
         stack.status("stack.push(7)", null);
         o = stack.pop();
@@ -82,5 +78,4 @@ public class ArrayStack<E> implements Stack<E>{
         o = stack.top();
         stack.status("stack.top()", o);
     }
-
 }
