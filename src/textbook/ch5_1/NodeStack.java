@@ -1,5 +1,8 @@
 package textbook.ch5_1;
 
+/**
+ * 使用Singly-linked list 實現Stack資料結構
+ */
 public class NodeStack<E> implements Stack<E>{
     private Node<E> top;
     private int size;
