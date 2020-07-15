@@ -11,7 +11,7 @@ public class NodeDeque<E> implements Deque<E> {
     protected int size;
 
     public NodeDeque() {
-        header = new DNode<>(null, null, null); //此時trailer為null, 故不能只訂到next
+        header = new DNode<>(null, null, null); //此時trailer為null, 故不能指定到next
         trailer = new DNode<>(null, header, null);
         header.setNext(trailer);
         size = 0;
