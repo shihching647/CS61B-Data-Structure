@@ -1,4 +1,4 @@
-package textbook.ch6_2_nodeList;
+package textbook.ch6_2_ch_6_3_nodeList;
 
 public class DNode<E> implements Position<E>{
     private DNode<E> prev, next;

@@ -1,4 +1,6 @@
-package textbook.ch6_2_nodeList;
+package textbook.ch6_2_ch_6_3_nodeList;
+
+import java.util.Iterator;
 
 public class NodePositionList<E> implements PositionList<E>{
     private int numOfElements;
@@ -157,6 +159,28 @@ public class NodePositionList<E> implements PositionList<E>{
         return sb.append("]").toString();
     }
 
+    /*Returns an iterator of all the elements in the list*/
+    @Override
+    public Iterator<E> iterator() {
+        return new ElementIterator<E>(this);
+    }
+
+    /*Returns an iterable collection of all the nodes in the list*/
+    //new一個新的PositionList, 再把每一個Position物件放進去
+    @Override
+    public Iterable<Position<E>> positions() {
+        PositionList<Position<E>> positionList = new NodePositionList<Position<E>>();
+        if(!isEmpty()) {
+            Position<E> node = first();
+            while (true) {
+                positionList.addLast(node);
+                if(node == last()) break;
+                node = next(node);
+            }
+        }
+        return positionList;
+    }
+
     public static void main(String[] args) {
         NodePositionList<Integer> list= new NodePositionList<>();
         list.addFirst(0);
@@ -175,5 +199,12 @@ public class NodePositionList<E> implements PositionList<E>{
         System.out.println("list = " + list + "\tisEmpty() = " + list.isEmpty() + "\tsize = " + list.size());
         list.addAfter(list.first(), 1);
         System.out.println("list = " + list + "\tisEmpty() = " + list.isEmpty() + "\tsize = " + list.size());
+        //Using Iterator
+        for(int ele : list) {
+            System.out.println(ele);
+        }
+        for(Position<Integer> ele : list.positions()) {
+            System.out.println(ele.element());
+        }
     }
 }

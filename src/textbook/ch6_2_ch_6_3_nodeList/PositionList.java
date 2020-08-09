@@ -1,6 +1,8 @@
-package textbook.ch6_2_nodeList;
+package textbook.ch6_2_ch_6_3_nodeList;
 
-public interface PositionList<E> {
+import java.util.Iterator;
+
+public interface PositionList<E> extends Iterable<E> {
     public int size();
     public boolean isEmpty();
     /*Returns the fist node in the list.*/
@@ -19,4 +21,9 @@ public interface PositionList<E> {
     public E set(Position<E> p, E e) throws InvalidPositionException;
     /*Removes a node from the list, returning the element stored there*/
     public E remove(Position<E> p) throws InvalidPositionException;
+    /*Returns an iterator of all the elements in the list*/
+    @Override
+    public Iterator<E> iterator();
+    /*Returns an iterable collection of all the nodes in the list*/
+    public Iterable<Position<E>> positions();
 }
