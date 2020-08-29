@@ -6,7 +6,7 @@ public class HashTableMapTester {
     public static void main(String[] args) throws InvalidKeyException {
         HashTableMap<String, Integer> map = new HashTableMap<>(10);
         System.out.println(map);
-        map.put("one", 1);
+        System.out.println(map.put("one", 1));
         System.out.println(map);
         map.put("two", 2);
         System.out.println(map);
@@ -19,6 +19,8 @@ public class HashTableMapTester {
         map.put("six", 6);
         System.out.println(map);
         map.put("seven", 7);
+        System.out.println(map);
+        System.out.println(map.put("seven", 777));
         System.out.println(map);
         map.remove("one");
         System.out.println(map);

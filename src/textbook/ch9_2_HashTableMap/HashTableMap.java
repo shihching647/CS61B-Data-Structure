@@ -1,12 +1,16 @@
 package textbook.ch9_2_HashTableMap;
 
 import textbook.ch6_2_ch_6_3_nodeList.NodePositionList;
-import textbook.ch6_2_ch_6_3_nodeList.Position;
 import textbook.ch6_2_ch_6_3_nodeList.PositionList;
 
 import java.security.InvalidKeyException;
 import java.util.Random;
-
+/*
+    1.Use built-in hashCode methos and the MAD to compute a key's hash code.
+    2.Use a sentinel AVAILABLE as a marker for deactivated entries
+    3.Use open addressing method (linear probing) to deal with collision
+    4.Use rehash method to keep load factor below 0.5
+ */
 public class HashTableMap<K,V> implements Map<K,V> {
     public static class HashEntry<K,V> implements Entry<K, V> {
         protected K key;
@@ -47,6 +51,10 @@ public class HashTableMap<K,V> implements Map<K,V> {
     protected int prime, capacity; //prime factor and capacity of backet array
     protected Entry<K,V> [] bucket; //bucket array
     protected long scale, shift; //the shift and scale factors
+
+    public HashTableMap() {
+        this(10);
+    }
 
     public HashTableMap(int capacity) {
         this(109345121, capacity);
