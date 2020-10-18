@@ -46,7 +46,7 @@ public class ArrayIndexList<E> implements IndexList<E>{
         }
         list[i] = e;
         size++;
-        System.out.print("capacity = " + capacity);
+//        System.out.print("capacity = " + capacity);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class ArrayIndexList<E> implements IndexList<E>{
             list[j - 1] = list[j];
         }
         size--;
-        System.out.print("capacity = " + capacity);
+//        System.out.print("capacity = " + capacity);
         return temp;
     }
 
