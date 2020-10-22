@@ -1,0 +1,8 @@
+Java Programming Case Study on Tic-Tac-Toe
+
+1.TTTConsoleNonOO2P is a console-based, 2 players and Non-OO version Tic-Tac-Toe game.
+
+2.The OO version of previous game includes two emuneration GameState.java and Seed.java,
+  three class Cell.java, Board.java and GameMain.
+
+Reference:https://www3.ntu.edu.sg/home/ehchua/programming/java/JavaGame_TicTacToe.html#zz-8.
