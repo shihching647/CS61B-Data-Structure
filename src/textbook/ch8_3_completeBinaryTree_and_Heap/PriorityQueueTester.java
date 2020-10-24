@@ -2,15 +2,18 @@ package textbook.ch8_3_completeBinaryTree_and_Heap;
 
 import textbook.ch8_2_listPriorityQueue.PriorityQueue;
 import textbook.ch8_2_listPriorityQueue.SortedListPriorityQueue;
+import textbook.ch8_4_adaptablePriorityQueue.AdaptablePriorityQueue;
+import textbook.ch8_4_adaptablePriorityQueue.SortedAdaptablePriorityQueue;
 
 public class PriorityQueueTester {
     PriorityQueue<Integer,String> priorityQueue;
 
+    public PriorityQueueTester(){}
     public PriorityQueueTester(PriorityQueue<Integer,String> priorityQueue) {
         this.priorityQueue = priorityQueue;
     }
 
-    public void runTest() {
+    public void runPriorityQueueTest() {
         priorityQueue.insert(5, "A");
         priorityQueue.insert(9, "C");
         priorityQueue.insert(3, "B");
@@ -28,11 +31,12 @@ public class PriorityQueueTester {
         System.out.println("isEmpty() : " + priorityQueue.isEmpty());
     }
 
+
     public static void main(String[] args) {
         PriorityQueueTester tester1 = new PriorityQueueTester(new SortedListPriorityQueue<>());
         PriorityQueueTester tester2 = new PriorityQueueTester(new HeapPriorityQueue<>());
-        tester1.runTest();
+        tester1.runPriorityQueueTest();
         System.out.println("-----------------------");
-        tester2.runTest();
+        tester2.runPriorityQueueTest();
     }
 }

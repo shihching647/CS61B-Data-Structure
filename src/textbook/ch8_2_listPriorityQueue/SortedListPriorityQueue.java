@@ -69,7 +69,7 @@ public class SortedListPriorityQueue<K,V> implements PriorityQueue<K,V> {
         return entry;
     }
 
-    private void checkKey(K key) throws InvalidKeyException {
+    protected void checkKey(K key) throws InvalidKeyException {
         if(key == null) {
             throw new InvalidKeyException("The key is null.");
         } else if(!(key instanceof Comparable)) {
