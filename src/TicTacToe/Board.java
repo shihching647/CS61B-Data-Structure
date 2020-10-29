@@ -82,6 +82,6 @@ public class Board {
             }
             if(i != cells.length - 1) result += "-----\n";
         }
-        System.out.println(result);
+        System.out.println(result.substring(0));
     }
 }
