@@ -12,7 +12,7 @@ public class AIPlayerMinMax extends AIPlayer {
     @Override
     int[] move() {
 //        int[] result= minimax(2, mySeed);
-        int[] result= minimaxWithAlphaBetaPurning(2, mySeed, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        int[] result= minimaxWithAlphaBetaPruning(2, mySeed, Integer.MIN_VALUE, Integer.MAX_VALUE);
         return new int[] {result[1], result[2]};
     }
 
@@ -55,7 +55,7 @@ public class AIPlayerMinMax extends AIPlayer {
 
     /** Minimax (recursive) at level of depth for maximizing or minimizing player
      with alpha-beta cut-off. Return int[3] of {score, row, col}  */
-    private int[] minimaxWithAlphaBetaPurning(int depth, Seed player, int alpha, int beta) {
+    private int[] minimaxWithAlphaBetaPruning(int depth, Seed player, int alpha, int beta) {
 
         List<int[]> nextMoves = generateNextMoves();
 
@@ -69,14 +69,14 @@ public class AIPlayerMinMax extends AIPlayer {
             for(int[] nextMove : nextMoves) {
                 cells[nextMove[0]][nextMove[1]].content = player;
                 if(player == mySeed) {
-                    score = minimaxWithAlphaBetaPurning(depth - 1, oppSeed, alpha, beta)[0];
+                    score = minimaxWithAlphaBetaPruning(depth - 1, oppSeed, alpha, beta)[0];
                     if(score > alpha) {
                         alpha = score;
                         bestRow = nextMove[0];
                         bestCol = nextMove[1];
                     }
                 } else {
-                    score = minimaxWithAlphaBetaPurning(depth - 1, mySeed, alpha, beta)[0];
+                    score = minimaxWithAlphaBetaPruning(depth - 1, mySeed, alpha, beta)[0];
                     if(score < beta) {
                         beta = score;
                         bestRow = nextMove[0];
