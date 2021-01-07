@@ -46,7 +46,7 @@ public class TreeMap<K,V> extends AbstractSortedMap<K,V> {
             Node<Entry<K,V>> z = y.getParent();
 
             if(z == null) {
-                x = root;
+                root = x;
                 x.setParent(null);
             } else {
                 relink(z, x, y == z.getLeft());
@@ -132,6 +132,8 @@ public class TreeMap<K,V> extends AbstractSortedMap<K,V> {
     protected Position<Entry<K,V>> sibling(Position<Entry<K,V>> p) { return tree.sibling(p);}
     protected Entry<K,V> set(Position<Entry<K,V>> p, Entry<K,V> entry) { return tree.set(p, entry);}
     protected Entry<K,V> remove(Position<Entry<K,V>> p) { return tree.remove(p); }
+    protected Position<Entry<K,V>> restructure(Position<Entry<K,V>> p) { return tree.restructure(p); }
+    protected void rotate(Position<Entry<K,V>> p) { tree.rotate(p); }
 
     /** Utility used when inserting a new entry at a leaf of the tree */
     private void expandExternal(Position<Entry<K,V>> p, Entry<K,V> entry) {
