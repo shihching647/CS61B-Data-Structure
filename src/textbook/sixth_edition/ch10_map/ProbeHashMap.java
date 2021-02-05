@@ -25,7 +25,7 @@ public class ProbeHashMap<K,V> extends AbstractHashMap<K,V> {
 
     protected V bucketPut(int h, K key, V value) {
         int index = findSlot(h, key);
-        if(index > 0) return table[h].setValue(value);
+        if(index >= 0) return table[index].setValue(value);
         table[-index - 1] = new MapEntry<>(key, value);
         n++;
         return null;

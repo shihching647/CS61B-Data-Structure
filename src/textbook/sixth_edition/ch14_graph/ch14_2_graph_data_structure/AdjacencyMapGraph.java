@@ -93,8 +93,8 @@ public class AdjacencyMapGraph<V,E> implements Graph<V,E> {
 
     @Override
     public Edge<E> insertEdge(Vertex<V> u, Vertex<V> v, E element) throws IllegalArgumentException {
-        InnerVertex<V> origin = validate(v);
-        InnerVertex<V> dest = validate(u);
+        InnerVertex<V> origin = validate(u);
+        InnerVertex<V> dest = validate(v);
         if(getEdge(origin, dest) == null) {
             InnerEdge<E> edge = new InnerEdge<>(origin, dest, element);
             edge.setPosition(edges.addLast(edge));
@@ -141,6 +141,15 @@ public class AdjacencyMapGraph<V,E> implements Graph<V,E> {
         return edge;
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Vertex = ");
+        for (Vertex<V> v : vertices)
+            sb.append(v.getElement() + ",  ");
+        sb.append("\nEdge = ");
+        for (Edge<E> e : edges)
+            sb.append(e.getElement() + ",  ");
+        return sb.toString();
+    }
 
     //---------------- nested Vertex class ----------------
     /** A vertex of an adjacency map graph representation. */
@@ -178,7 +187,7 @@ public class AdjacencyMapGraph<V,E> implements Graph<V,E> {
 
     //---------------- nested InnerEdge class ----------------
     /** An edge between two vertices. */
-    public class InnerEdge<E> implements Edge<E> {
+    private class InnerEdge<E> implements Edge<E> {
         private E element;
         private Position<Edge<E>> position; //the position storing in graph's edges
         Vertex<V>[] endPoints;

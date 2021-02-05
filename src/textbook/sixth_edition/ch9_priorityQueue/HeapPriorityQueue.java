@@ -1,12 +1,12 @@
 package textbook.sixth_edition.ch9_priorityQueue;
 
-import textbook.fifth_edition.ch6_1.ArrayIndexList;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 public class HeapPriorityQueue<K,V> extends AbstractPriorityQueue<K,V> {
 
-    protected ArrayIndexList<Entry<K,V>> heap = new ArrayIndexList<>();
+    protected ArrayList<Entry<K,V>> heap = new ArrayList<>();
 
     public HeapPriorityQueue(Comparator<K> comparator) { super(comparator); }
 
