@@ -29,7 +29,7 @@ public class HashTableChained implements Dictionary {
   private int capacity;
   private int prime = 109345121;
   private long scale, shift;
-
+  private int times = 0; //紀錄collisions的次數
   /** 
    *  Construct a new empty hash table intended to hold roughly sizeEstimate
    *  entries.  (The precise number of buckets is up to you, but we recommend
@@ -39,10 +39,10 @@ public class HashTableChained implements Dictionary {
   public HashTableChained(int sizeEstimate) {
     // Your solution here.
     this.capacity = 2 * sizeEstimate;
-    table = new DList[capacity];
     Random rand = new Random();
     scale = rand.nextInt(prime - 1) + 1;
     shift = rand.nextInt(prime);
+    makeEmpty();
   }
 
   /** 
@@ -109,17 +109,28 @@ public class HashTableChained implements Dictionary {
     int hashValue = compFunction(key.hashCode());
     Entry entry = createEntry(key, value);
     DList chain = table[hashValue];
-    if(chain != null) {
-        chain.insertBack(entry);
-    } else {
-      chain = new DList();
-      chain.insertBack(entry);
-      table[hashValue] = chain;
+    if(chain.front() != null) {
+      checkCollision(chain, entry);
     }
+    chain.insertBack(entry);
     n++;
     if(n > capacity / 2)         // keep load factor <= 0.5
-      resize(2 * capacity - 1);  // (or find a nearby prime)
+      resize(2 * capacity - 1);
     return entry;
+  }
+
+  //check if collision happened, 必須檢查該bucket裡的所有entry, 才能確定collision是否發生
+  private void checkCollision(DList chain, Entry entry) {
+    DListNode node = chain.front();
+    while (node != null) {
+      Entry oldEntry = (Entry) node.item;
+      //collision未發生,直接return
+      if(entry.key.equals(oldEntry.key)) {
+        return;
+      }
+      node = chain.next(node);
+    }
+    System.out.println("Collision happened " + ++times + " times.");
   }
 
   /** 
@@ -138,7 +149,7 @@ public class HashTableChained implements Dictionary {
     // Replace the following line with your solution.
     int hashValue = compFunction(key.hashCode());
     DList chain = table[hashValue];
-    if (chain != null) {
+    if (chain.front() != null) {
       DListNode pos = findEntryInChain(chain, key);
       if (pos != null) return (Entry) pos.item;
     }
@@ -162,13 +173,11 @@ public class HashTableChained implements Dictionary {
     // Replace the following line with your solution.
     int hashValue = compFunction(key.hashCode());
     DList chain = table[hashValue];
-    if (chain != null) {
-      DListNode pos = findEntryInChain(chain, key);
-      if (pos != null) {
-        chain.remove(pos);
-        n--;
-        return (Entry) pos.item;
-      }
+    DListNode pos = findEntryInChain(chain, key);
+    if (pos != null) {
+      chain.remove(pos);
+      n--;
+      return (Entry) pos.item;
     }
     return null;
   }
@@ -179,6 +188,9 @@ public class HashTableChained implements Dictionary {
   public void makeEmpty() {
     // Your solution here.
     table = new DList[capacity];
+    for (int i = 0; i < capacity; i++) {
+      table[i] = new DList();
+    }
     n = 0;
   }
 
@@ -205,19 +217,43 @@ public class HashTableChained implements Dictionary {
     Entry[] buffer = new Entry[n];
     int i = 0;
     for (DList chain : table) {
-      if (chain != null) {
-        DListNode node = chain.front();
-        while (node != null) {
-          buffer[i++] = (Entry) node.item;
-          node = chain.next(node);
-        }
+      DListNode node = chain.front();
+      while (node != null) {
+        buffer[i++] = (Entry) node.item;
+        node = chain.next(node);
       }
     }
 
     this.capacity = capacity;
-    table = new DList[capacity];
+    makeEmpty();
     for (Entry entry : buffer) {
       insert(entry.key, entry.value);
+    }
+  }
+
+  public String toString() {
+    StringBuilder sb = new StringBuilder("Capacity = "+capacity+", size = "+n+"\n[");
+    for (DList chain : table) {
+      DListNode node = chain.front();
+      while (node != null) {
+        Entry entry = (Entry) node.item;
+        sb.append("(" + entry.key + "," + entry.value + "),");
+        node = chain.next(node);
+      }
+    }
+    return n > 0 ? sb.append("\b]").toString() : sb.append("]").toString();
+  }
+
+  public void showBucket() {
+    for (int i = 0; i < table.length; i++) {
+      DList chain = table[i];
+      System.out.print("bucket_" + i + ": ");
+      DListNode node = chain.front();
+      while (node != null) {
+        System.out.print("*");
+        node = chain.next(node);
+      }
+      System.out.println();
     }
   }
 }

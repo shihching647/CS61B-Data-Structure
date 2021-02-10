@@ -66,7 +66,10 @@ public class SimpleBoard {
     // Replace the following line with your solution.  Be sure to return false
     //   (rather than throwing a ClassCastException) if "board" is not
     //   a SimpleBoard.
-    return false;
+    if (this == board) return true;
+    if (board == null || getClass() != board.getClass()) return false;
+    SimpleBoard that = (SimpleBoard) board;
+    return this.hashCode() == that.hashCode();
   }
 
   /**
@@ -76,7 +79,31 @@ public class SimpleBoard {
 
   public int hashCode() {
     // Replace the following line with your solution.
-    return 99;
+    String base3Number = getBase3Number();
+    return getBase3NumToBase10Num(base3Number);
+  }
+
+  // 產生base3, 64位數字
+  private String getBase3Number() {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < DIMENSION; i++) {
+      for (int j = 0; j < DIMENSION; j++) {
+        sb.append(String.valueOf(grid[i][j]));
+      }
+    }
+    return sb.toString();
+  }
+
+  //以第一位為1,2表示正,0表示負 , 將剩餘的63位數字轉換成base10, 且不超過 2^31 - 1的數字
+  private int getBase3NumToBase10Num(String base3Number) {
+    int sum = 0;
+    int length = base3Number.length();
+    for (int i = length - 1; i > 0; i--) {
+      if (sum + (base3Number.charAt(i) - '0') * Math.pow(3, length + 1 - i) > Integer.MAX_VALUE) break;
+      sum += (base3Number.charAt(i) - '0') * Math.pow(3, length + 1 - i);
+    }
+    if (base3Number.charAt(0) >= '1') return sum;
+    else return -sum;
   }
 
 }
