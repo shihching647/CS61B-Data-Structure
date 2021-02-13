@@ -2,7 +2,7 @@ package project.pj3.graph;
 
 import project.pj3.list.DListNode;
 
-public class InnerEdge {
+class InnerEdge {
     //node1, node2為次edge在各別adjacencyList的位置
     protected DListNode node1;
     protected DListNode node2;

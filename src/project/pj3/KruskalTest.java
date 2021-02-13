@@ -136,6 +136,7 @@ public class KruskalTest {
 //  }
 
     System.out.println("Finding the minimum spanning tree.");
+    System.out.println("外面edge = " + g.edgeCount());
     t = Kruskal.minSpanTree(g);
 
 //  for (i = 0; i < vertArray.length; i++) {
