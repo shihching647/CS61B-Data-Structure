@@ -2,6 +2,7 @@ package textbook.sixth_edition.ch12_sorting_and_selection.ch12_2_quick_sort;
 
 import textbook.fifth_edition.ch5_2.ArrayQueue;
 import textbook.fifth_edition.ch5_2.Queue;
+import textbook.sixth_edition.ch12_sorting_and_selection.MyCompatator;
 
 import java.util.Comparator;
 
@@ -22,14 +23,7 @@ public class QueueBasedQuickSort {
         a.enqueue(7);
         a.enqueue(-1);
         a.enqueue(-1);
-        quickSort(a, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                if (o1 > o2) return 1;
-                else if (o1 < o2) return -1;
-                else return 0;
-            }
-        });
+        quickSort(a, new MyCompatator());
         System.out.println(a);
     }
 

@@ -1,5 +1,7 @@
 package textbook.sixth_edition.ch12_sorting_and_selection.ch12_1_merge_sort;
 
+import textbook.sixth_edition.ch12_sorting_and_selection.MyCompatator;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -11,14 +13,7 @@ public class ArrayBasedMergeSort {
 
     public static void main(String[] args) {
         Integer[] a = {2, 4, 6, 6, 0, 9, -1, -9};
-        mergeSort(a, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                if (o1 == o2) return 0;
-                else if (o1 > o2) return 1;
-                else return -1;
-            }
-        });
+        mergeSort(a, new MyCompatator());
         System.out.println(Arrays.toString(a));
     }
 
