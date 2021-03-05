@@ -136,7 +136,37 @@ class SibTreeNode extends TreeNode {
   public void insertChild(Object item, int c) throws InvalidNodeException {
     // FILL IN YOUR SOLUTION TO PART II HERE.
     if (!isValidNode()) throw new InvalidNodeException("The node is invalid.");
+    //create new node with parent
+    SibTreeNode newNode = new SibTreeNode(myTree, item);
+    newNode.parent = this;
 
+    //If c < 1, act as if c is 1.
+    if (c <= 1) c = 1;
+
+    if (firstChild == null) {
+      firstChild = newNode;
+    } else {
+      SibTreeNode pre = null, cur = firstChild, next = firstChild.nextSibling;
+      int i = 1;
+      while (next != null && i < c) {
+        pre = cur;
+        cur = next;
+        next = next.nextSibling;
+        i++;
+      }
+      //1.剛好到insert的位置
+      if (i == c) {
+        if (pre == null) { //1.1插入位置為第一個
+          firstChild = newNode;
+        } else {
+          pre.nextSibling = newNode;
+        }
+        newNode.nextSibling = cur;
+      } else if (next == null){ //2. 因為next == null才跳出來的, 直接加到最後
+        cur.nextSibling = newNode;
+      }
+    }
+    myTree.size++;
   }
 
   /**
@@ -147,6 +177,36 @@ class SibTreeNode extends TreeNode {
    */
   public void removeLeaf() throws InvalidNodeException {
     // FILL IN YOUR SOLUTION TO PART III HERE.
+    if (!isValidNode()) throw new InvalidNodeException("The node is invalid.");
+    // if this node has child, do nothing.
+    if (firstChild != null) return;
+    // 先判斷是否為root
+    if (myTree.root == this) {
+      myTree.root = null;
+    } else {
+      //分三種情況
+      if (parent.firstChild == this) {    //1.first child
+        SibTreeNode next = parent.firstChild.nextSibling;
+        if (next == null)
+          parent.firstChild = null;
+        else
+          parent.firstChild = next;
+      } else {
+        SibTreeNode pre = null, cur = parent.firstChild, next = cur.nextSibling;
+        while (cur != this) {
+          pre = cur;
+          cur = next;
+          next = next.nextSibling;
+        }
+        if (cur.nextSibling == null) {    //2.last child
+          pre.nextSibling = null;
+        } else {                          //3.other
+          pre.nextSibling = next;
+        }
+      }
+    }
+    valid = false;
+    myTree.size--;
   }
 
 }
