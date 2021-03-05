@@ -187,9 +187,9 @@ class SibTreeNode extends TreeNode {
       //分三種情況
       if (parent.firstChild == this) {    //1.first child
         SibTreeNode next = parent.firstChild.nextSibling;
-        if (next == null)
+        if (next == null) //1.1只有一個child
           parent.firstChild = null;
-        else
+        else              //1.2有其他的child
           parent.firstChild = next;
       } else {
         SibTreeNode pre = null, cur = parent.firstChild, next = cur.nextSibling;
