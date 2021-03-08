@@ -1,4 +1,4 @@
-package textbook.fifth_edition.ch8_3_completeBinaryTree_and_Heap;
+package textbook.sixth_edition.ch12_sorting_and_selection;
 
 /**
  * Java program for implementation of in-place Heap Sort
