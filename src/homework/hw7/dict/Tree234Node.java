@@ -39,36 +39,115 @@ class Tree234Node {
     child4 = null;
   }
 
+  Tree234Node(Tree234Node p, int key, Tree234Node child1, Tree234Node child2) {
+    keys = 1;
+    key1 = key;
+    parent = p;
+    this.child1 = child1;
+    this.child2 = child2;
+    this.child3 = null;
+    this.child4 = null;
+  }
+
   boolean isFull() {
-    return child4 != null;
+    return (child4 != null || keys == 3);
   }
 
+  boolean isLeaftNode() {
+    return child1 == null;
+  }
+
+  /**
+   * this node已包含有三個key, 把key2擺到parent裡, 此node分成leafNode(包含key1),rightNode(包含key3), 並把彼此間的關係建立好
+   * @param key 欲插入234Tree的key
+   * @return if (key < key2) return leaf node else return right node
+   */
   Tree234Node split(int key) {
+
     int insertKey = this.key2;
-    if (parent == null)
+    Tree234Node leftNode = new Tree234Node(null, this.key1, child1, child2);
+    Tree234Node rightNode = new Tree234Node(null, this.key3, child3, child4);
+
+    if (parent == null) {
+      //處理key
       parent = new Tree234Node(null, insertKey);
-    else if (parent.keys == 1){
-      if (insertKey < parent.key1) {
+      //處理child
+      parent.child1 = leftNode;
+      parent.child2 = rightNode;
 
+    } else if (parent.keys == 1){
+      if (parent.child1 == this) { //insertKey < parent.key1
+        //處理key
+        parent.key2 = parent.key1;
+        parent.key1 = insertKey;
+        //處理child
+        parent.child3 = parent.child2;
+        parent.child1 = leftNode;
+        parent.child2 = rightNode;
+      } else if (parent.child2 == this){
+        //處理key
+        parent.key2 = insertKey;
+        //處理child
+        parent.child2 = leftNode;
+        parent.child3 = rightNode;
       } else {
-
+        throw new RuntimeException("parent.keys與children數不符合");
       }
+      parent.keys++;
     } else if (parent.keys == 2) {
-
+      if (parent.child1 == this) {
+        //處理key
+        parent.key3 = parent.key2;
+        parent.key2 = parent.key1;
+        parent.key1 = insertKey;
+        //處理child
+        parent.child4 = parent.child3;
+        parent.child3 = parent.child2;
+        parent.child2 = rightNode;
+        parent.child1 = leftNode;
+      } else if (parent.child2 == this) {
+        //處理key
+        parent.key3 = parent.key2;
+        parent.key2 = insertKey;
+        //處理child
+        parent.child4 = parent.child3;
+        parent.child3 = rightNode;
+        parent.child2 = leftNode;
+      } else if (parent.child3 == this) {
+        //處理key
+        parent.key3 = insertKey;
+        //處理child
+        parent.child4 = rightNode;
+        parent.child3 = leftNode;
+      } else {
+        throw new RuntimeException("parent.keys與children數不符合");
+      }
+      parent.keys++;
     } else {
-
+      throw new RuntimeException("parent沒有空間給新的key插入");
     }
 
-    if (key < this.key2) {
+    //left,right node的parent要指回parent
+    leftNode.parent = parent;
+    rightNode.parent = parent;
+    if (!leftNode.isLeaftNode()) {
+      leftNode.child1.parent = leftNode;
+      leftNode.child2.parent = leftNode;
+    }
+    if (!rightNode.isLeaftNode()) {
+      rightNode.child1.parent = rightNode;
+      rightNode.child2.parent = rightNode;
+    }
 
+    //回傳
+    if (key < insertKey) {
+      return leftNode;
     } else {
-
+      return rightNode;
     }
   }
 
-  void sort() {
 
-  }
   /**
    *  toString() recursively prints this Tree234Node and its descendants as
    *  a String.  Each node is printed in the form such as (for a 3-key node)

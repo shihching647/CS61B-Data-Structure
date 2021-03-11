@@ -102,26 +102,63 @@ public class Tree234 extends IntDictionary {
    **/
   public void insert(int key) {
     // Fill in your solution here.
-    Tree234Node node = root;
-    while (node != null) {
-      if (node.isFull())
-        node = node.split(key);
-      if (key < node.key1) {
-        node = node.child1;
-      } else if (key == node.key1) {
-        return;
-      } else if ((node.keys == 1) || (key < node.key2)) {
-        node = node.child2;
-      } else if (key == node.key2) {
-        return;
-      } else if ((node.keys == 2) || (key < node.key3)) {
-        node = node.child3;
-      } else if (key == node.key3) {
-        return;
-      } else {
-        node = node.child4;
+
+    //第一筆直接新增root
+    if (root == null) {
+      root = new Tree234Node(null, key);
+    } else {
+      // 1. Find the node which the key should be inserted
+      Tree234Node node = root;
+      while (node != null) {
+        if (node.isFull()) {
+          if (node == root) {
+            node = node.split(key);
+            root = node.parent;
+          } else {
+            node = node.split(key);
+          }
+        }
+        if (node.child1 == null) break;
+        if (key < node.key1) {
+          node = node.child1;
+        } else if (key == node.key1) {
+          return;
+        } else if ((node.keys == 1) || (key < node.key2)) {
+          node = node.child2;
+        } else if (key == node.key2) {
+          return;
+        } else if ((node.keys == 2) || (key < node.key3)) {
+          node = node.child3;
+        } else if (key == node.key3) {
+          return;
+        } else {
+          node = node.child4;
+        }
       }
+
+      //2. Insert key at the node
+      if (node.keys == 1) {
+        if (key < node.key1) {
+          node.key2 = node.key1;
+          node.key1 = key;
+        } else {
+          node.key2 = key;
+        }
+      } else if (node.keys == 2) {
+        if (key < node.key1) {
+          node.key3 = node.key2;
+          node.key2 = node.key1;
+          node.key1 = key;
+        } else if (key > node.key1 && key < node.key2) {
+          node.key3 = node.key2;
+          node.key2 = key;
+        } else {
+          node.key3 = key;
+        }
+      }
+      node.keys++;
     }
+    this.size++;
   }
 
 
