@@ -37,7 +37,7 @@ public class Maze {
    **/
   public Maze(int horizontalSize, int verticalSize) {
     int i, j;
-
+    int numOfWalls = 0;
     horiz = horizontalSize;
     vert = verticalSize;
     if ((horiz < 1) || (vert < 1) || ((horiz == 1) && (vert == 1))) {
@@ -52,6 +52,7 @@ public class Maze {
       for (j = 0; j < vert - 1; j++) {
         for (i = 0; i < horiz; i++) {
           hWalls[i][j] = true;
+          numOfWalls++;
         }
       }
     }
@@ -61,11 +62,10 @@ public class Maze {
       for (i = 0; i < horiz - 1; i++) {
         for (j = 0; j < vert; j++) {
           vWalls[i][j] = true;
+          numOfWalls++;
         }
       }
     }
-
-
 
     /**
      * Fill in the rest of this method.  You should go through all the walls of
@@ -78,8 +78,102 @@ public class Maze {
      * is run, so that you can make lots of different mazes.
      **/
 
+    //(1)  Create a disjoint sets data structure in which each cell of the maze is
+    //     represented as a separate item
+    DisjointSets sets = new DisjointSets(horizontalSize * verticalSize);
+
+    //(2)  Order the interior walls of the maze in a random order.
+    Wall[] order = new Wall[numOfWalls];
+    int k = 0;
+
+    // Add all of the horizontal interior walls.
+    if (vert > 1) {
+      for (j = 0; j < vert - 1; j++) {
+        for (i = 0; i < horiz; i++) {
+          order[k++] = new Wall(i, j, Wall.HORIZONTAL);
+        }
+      }
+    }
+    // Add all of the vertical interior walls.
+    if (horiz > 1) {
+      for (i = 0; i < horiz - 1; i++) {
+        for (j = 0; j < vert; j++) {
+          order[k++] = new Wall(i, j, Wall.VERTICAL);
+        }
+      }
+    }
+    // 隨機打亂順序
+    for (k = k - 1; k > 0; k--) {
+      int rand = randInt(numOfWalls);
+      //swap
+      Wall temp = order[k];
+      order[k] = order[rand];
+      order[rand] = temp;
+    }
+
+    //(3)  Visit the walls in the (random) order in which they appear in the array.
+    for (k = 0; k < order.length; k++) {
+      Wall wall = order[k];
+      Cell[] cells = wall.cells();
+      int cell1 = cells[0].indexInSets();
+      int cell2 = cells[1].indexInSets();
+      int root1 = sets.find(cell1);
+      int root2 = sets.find(cell2);
+      if (root1 != root2) { //如果在不同set裡面 -> 移除wall,且把兩個set union起來
+        wall.removeFromMaze();
+        sets.union(root1, root2);
+      }
+    }
+  }
+
+  private class Cell {
+    int x;
+    int y;
+
+    public Cell(int x, int y) {
+      this.x = x;
+      this.y = y;
+    }
+
+    //此cell在disjoint sets 裡面對應的index, 編號由左至右, 由上至下
+    int indexInSets() {
+      return y * horiz + x;
+    }
+
+    public String toString() {
+      return "(" + x + "," + y + ")";
+    }
+  }
 
 
+  private class Wall {
+    public static final int HORIZONTAL = 0;
+    public static final int VERTICAL = 1;
+    int direction;
+    int x;
+    int y;
+
+    Wall(int x, int y, int direction) {
+      this.x = x;
+      this.y = y;
+      this.direction = direction;
+    }
+
+    Cell[] cells() {
+      if (direction == HORIZONTAL) {
+        return new Cell[]{new Cell(x,y), new Cell(x, y + 1)};
+      } else {
+        return new Cell[]{new Cell(x,y), new Cell(x + 1, y)};
+      }
+    }
+
+    void removeFromMaze() {
+      if (direction == HORIZONTAL) {
+        hWalls[x][y] = false;
+      } else {
+        vWalls[x][y] = false;
+      }
+    }
   }
 
   /**
@@ -157,6 +251,7 @@ public class Maze {
   private static int randInt(int choices) {
     if (random == null) {       // Only executed first time randInt() is called
       random = new Random();       // Create a "Random" object with random seed
+//      random.setSeed(0);
     }
     int r = random.nextInt() % choices;      // From 1 - choices to choices - 1
     if (r < 0) {
@@ -214,6 +309,7 @@ public class Maze {
    * DO NOT CHANGE THIS METHOD.  Your code is expected to work with our copy
    * of this method.
    */
+  // fromWhere是用來讓他知道上一個的cell在哪裡, 避免重複走到一樣的路, 導致誤判為cycle
   protected boolean depthFirstSearch(int x, int y, int fromWhere,
                                      boolean[][] cellVisited) {
     boolean cycleDetected = false;

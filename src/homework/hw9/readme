@@ -149,14 +149,27 @@ In a plain-text file called GRADER, suggest (in simple English) how you could
 use depth-first search to generate a random maze (or more importantly, lots of
 different random mazes), without using disjoint sets at all.
 
+初始化一個isVisited二維boolean陣列, 全部設為 false.
+     一個count計算目前cell總數
+
+從隨機cell開始,
+if (count總數 == cell總數)
+    return; //結束搜尋
+else
+    隨機選一個wall拆除, 拆除完後檢查該cell是否查看過
+    若沒查看過 -> 遞迴呼叫DFS在下一個cell, count++
+    若已經查看過 -> 隨機選另外的牆拆除 (直到所有牆都是過後) return
+
 (a)  How would your algorithm ensure that there is a path between every pair of
      cells, but no more than one path between any pair of cells (i.e., no
      cycles)?
 
+     因為每次呼叫都會檢查是否有被查看過, 所以保證任兩個cell間只有一條路
 (b)  How does your algorithm use random numbers to generate a different maze
      each time?  Specifically, what decision should be made by random numbers
      at each recursive invocation of the depth-first search method?
 
+     每次都會依隨機順序拆除牆 -> 每次產生的迷宮都不相同
 These questions can be answered with just a few sentences.
 
 Submitting your solution
