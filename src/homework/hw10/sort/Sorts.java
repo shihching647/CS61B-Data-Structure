@@ -26,7 +26,27 @@ public class Sorts {
    **/
   public static int[] countingSort(int[] keys, int whichDigit) {
     // Replace the following line with your solution.
-    return null;
+      int[] sortedKeys = new int[keys.length];
+      int[] counts = new int[16]; //radix = 16
+
+      for (int i = 0; i < keys.length; i++) {
+          int bit = (keys[i] >> whichDigit * 4) & 15; //radix = 16 = 2^4 所以一個digit移動4個bits
+          counts[bit]++;
+      }
+
+      int total = 0;
+      for (int i = 0; i < 16; i++) {
+          int c = counts[i];
+          counts[i] = total;
+          total += c;
+      }
+
+      for (int i = 0; i < keys.length; i++) {
+          int bit = (keys[i] >> whichDigit * 4) & 15; //radix = 16 = 2^4 所以一個digit移動4個bits
+          sortedKeys[counts[bit]++] = keys[i];
+      }
+
+      return sortedKeys;
   }
 
   /**
@@ -40,7 +60,14 @@ public class Sorts {
    **/
   public static int[] radixSort(int[] keys) {
     // Replace the following line with your solution.
-    return null;
+      int[] sortedKeys = new int[keys.length];
+      for (int i = 0; i <= 7; i++) {
+          if (i == 0)
+              sortedKeys = countingSort(keys, i);
+          else
+              sortedKeys = countingSort(sortedKeys, i);
+      }
+    return sortedKeys;
   }
 
   /**
